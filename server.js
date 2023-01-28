@@ -18,6 +18,8 @@ app.listen(3000, function() {
 
 // Make sure body parcer is placed before CRUD handlers (app.get, app.post, etc...);
 app.use(bodyParser.urlencoded({extended: true}));
+// Teach server to read and accept JSON
+app.use(bodyParser.json());
 
 MongoClient.connect(connectionString)
     .then(client => {
@@ -27,6 +29,9 @@ MongoClient.connect(connectionString)
 
         // Tell express we're using EJS as template engine (it has to be before app.use, appp.get or app.post)
         app.set('view engine', 'ejs');
+        // Tell express to make 'public' folder public
+        app.use(express.static('public'));
+
 
         // CRUD - READ
         app.get('/', (req, res) => {
@@ -49,7 +54,10 @@ MongoClient.connect(connectionString)
                 .catch(error => console.error(error))
         })
 
-        
+        // Accepting the PUT request
+        app.put('/quotes', (req, res) => {
+            console.log(req.body)
+        })
     })
     .catch(error => console.error(error));
 
