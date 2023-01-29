@@ -33,6 +33,16 @@ MongoClient.connect(connectionString)
         app.use(express.static('public'));
 
 
+        // CRUD - CREATE
+        // Triggering POST request through a form
+        app.post('/quotes', (req, res) => {
+            quotesCollection.insertOne(req.body)
+                .then(result => {
+                    res.redirect('/')
+                })
+                .catch(error => console.error(error))
+        })
+
         // CRUD - READ
         app.get('/', (req, res) => {
             // res.sendFile(__dirname + '/index.html');
@@ -44,16 +54,7 @@ MongoClient.connect(connectionString)
                 .catch(error => console.error(error));               
         })
 
-        // CRUD - CREATE
-        // Triggering POST request through a form
-        app.post('/quotes', (req, res) => {
-            quotesCollection.insertOne(req.body)
-                .then(result => {
-                    res.redirect('/')
-                })
-                .catch(error => console.error(error))
-        })
-
+        // CRUD - UPDATE
         // Accepting the PUT request
         app.put('/quotes', (req, res) => {
             quotesCollection.findOneAndUpdate(
@@ -71,6 +72,21 @@ MongoClient.connect(connectionString)
             })
             .catch(error => console.error(error))
         })
+
+        // CRUD - DELETE
+        app.delete('/quotes', (req, res) => {
+            quotesCollection.deleteOne(
+                {name: req.body.name}
+            )
+            .then(result => {
+                if (result.deletedCount === 0) {
+                    return res.json('No quote to delete')
+                }
+                res.json(`Deleted Darth Vader's quote`)
+            })
+            .catch(error => console.error(error))
+        })
+
     })
     .catch(error => console.error(error));
 
